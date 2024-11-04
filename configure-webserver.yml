@@ -1,0 +1,11 @@
+---
+- name: Configure webserver
+  hosts: ngx-webserver
+  become: yes
+  become_method: sudo
+  become_user: root
+
+  roles:
+    - install-nginx
+    - prepare-disk
+    - conﬁgure-ﬁrewall

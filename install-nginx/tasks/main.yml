@@ -1,0 +1,54 @@
+---
+- name: Download
+  get_url:
+    url: https://example.com/registry/nginx_1.0.0
+    dest: /usr/local/bin/nginx
+
+- name: Create nginx user
+  user:
+    name: nginx
+    group: nginx
+    home: /etc/nginx
+    createhome: yes
+
+- name: Create nginx environment directory
+  file:
+    path: /etc/nginx
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: 0700
+
+- name: Copy nginx templates
+  template:
+    src: templates/nginx/*
+    dest: /etc/nginx
+    owner: nginx
+    group: nginx
+    mode: 0600
+
+- name: Create nginx systemd unit
+  copy:
+    content: |
+     [Unit]
+     Description=Nginx Web Server
+     After=network.target
+
+     [Service]
+     Type=simple
+     User=nginx
+     Group=nginx
+     ExecStart=/usr/local/bin/nginx
+
+     [Install]
+     WantedBy=multi-user.target
+    dest: /etc/systemd/system/nginx.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Start and enable nginx service
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes

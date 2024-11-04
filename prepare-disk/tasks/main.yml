@@ -1,0 +1,26 @@
+---
+# tasks file for prepare-disk
+- name: Format disk
+  parted:
+    device: /dev/sda
+    number: 1
+    state: present
+    name: gpt
+
+- name: Create filesystem
+  filesystem:
+    fstype: xfs
+    dev: /dev/sda1
+
+- name: Mount filesystem
+  mount:
+    path: /data
+    src: /dev/sda1
+    fstype: xfs
+    state: mounted
+
+- name: Add disk to fstab
+  lineinfile:
+    path: /etc/fstab
+    line: "/dev/disk/by-label/disk-ssd xfs defaults 0 0"
+    state: present

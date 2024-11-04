@@ -1,0 +1,46 @@
+---
+# tasks file for conﬁgure-ﬁrewall
+- name: Allow outgoing connections
+  firewalld:
+    service: default
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: Allow established connections
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+    with_items:
+    - 'ssh'
+    - 'http'
+    - 'https'
+
+- name: Allow SSH connections from 10.10.10.10
+  firewalld:
+    service: ssh
+    permanent: yes
+    state: enabled
+    immediate: yes
+    source: 10.10.10.10/32
+
+- name: Allow incoming connections to HTTP and HTTPS
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+    with_items:
+    - 'http'
+    - 'https'
+
+- name: Reject all other incoming connections
+  firewalld:
+    service: "{{ item }}"
+    permanent: yes
+    state: disabled
+    immediate: yes
+    with_items:
+    - 'all'
